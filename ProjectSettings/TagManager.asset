@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - Cuser
+  - MainTower
+  - Bullet
+  - AttackDistance
+  - Tile
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - MainTower
+  - Water
+  - UI
+  - Enemy
+  - Bullet
+  - EnemyAttack
+  - Tile
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 1254941993
+    locked: 0
+  - name: Ground2
+    uniqueID: 2054462513
+    locked: 0
+  - name: Ground3
+    uniqueID: 650211221
+    locked: 0
+  - name: User
+    uniqueID: 4006459749
+    locked: 0
+  - name: Enemy
+    uniqueID: 605808125
+    locked: 0
+  - name: Cursor
+    uniqueID: 3927383085
+    locked: 0
