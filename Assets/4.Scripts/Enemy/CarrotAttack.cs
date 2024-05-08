@@ -13,6 +13,8 @@ public class CarrotAttack : MonoBehaviour
     public float waitingTime = 0.5f;
     Enemy enemy;
 
+    Collider2D currentHit;
+
     private void Start()
     {
         anim = GetComponent<AnimationController>();
@@ -26,15 +28,18 @@ public class CarrotAttack : MonoBehaviour
             transform.position = Vector2.Lerp(transform.position, enemy.currentTargetTower.transform.position, moveSpeed * Time.deltaTime);
         }
     }
+
     private void OnTriggerEnter2D(Collider2D hit)
     {
-        if (hit != null) //객체가 담겼는지 확인
+        if (hit != null) // 객체가 담겼는지 확인
         {
-            if (hit.CompareTag("MainTower") && !attacking) //해당 객체가 MainTower를 가지고 있다면
+            currentHit = hit;
+            if (hit.CompareTag("MainTower") && !attacking) // 메인타워에 충돌했을 때
             {
+                enemy.currentTargetTower = hit.transform;
                 anim.anim.SetTrigger(anim.Attack);
                 anim.anim.SetTrigger("Attack2");
-                Debug.Log("얘 타워 가지고 있어");
+                Debug.Log("메인타워 공격");
                 attack = true;
                 Invoke("DetectionTower", 0.5f);
                 StartCoroutine(TakeDamage());
@@ -42,17 +47,19 @@ public class CarrotAttack : MonoBehaviour
         }
     }
 
-
     IEnumerator TakeDamage()
     {
         yield return new WaitForSeconds(waitingTime);
         while (attack)
         {
+            if (currentHit != null)
+            {
+                GameManager.instance.health -= enemy.damage; // SubTower가 아닌 다른 오브젝트를 공격할 때는 메인타워의 체력을 감소시킴
+            }
             yield return new WaitForSeconds(attackTimer);
-            GameManager.Instance.health -= enemy.damage;
-
         }
     }
+
 
     private void DetectionTower()
     {

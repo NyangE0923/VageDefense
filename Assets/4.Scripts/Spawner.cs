@@ -20,7 +20,7 @@ public class Spawner : MonoBehaviour
         spawnTimer += Time.deltaTime;
         //소수점 아래는 버리고 Int형으로 바꾸는 함수 FloorToInt 반올림 하는 함수는 CeilToInt
         //즉 10초마다 레벨이 1씩 오르는 형태
-        level = Mathf.FloorToInt(GameManager.Instance.gameTime / 10f);
+        level = Mathf.FloorToInt(GameManager.instance.gameTime / 10f);
 
         if (spawnTimer > spawn[level].spawnTime)
         {
@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour
         {
             case 0:
                 {
-                    GameObject enemy = GameManager.Instance.pool.Get(0);
+                    GameObject enemy = GameManager.instance.pool.Get(0);
                     enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
                     enemy.GetComponent<Enemy>().Init(spawnData[0]);
                     return;
@@ -45,7 +45,7 @@ public class Spawner : MonoBehaviour
                 {
                     if (Random.value < .1f)
                     {
-                        GameObject enemy = GameManager.Instance.pool.Get(0);
+                        GameObject enemy = GameManager.instance.pool.Get(0);
                         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
                         enemy.GetComponent<Enemy>().Init(spawnData[0]);
 
@@ -54,7 +54,7 @@ public class Spawner : MonoBehaviour
 
                     if (Random.value < .9f)
                     {
-                        GameObject enemy = GameManager.Instance.pool.Get(1);
+                        GameObject enemy = GameManager.instance.pool.Get(1);
                         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
                         enemy.GetComponent<Enemy>().Init(spawnData[1]);
 
@@ -64,7 +64,7 @@ public class Spawner : MonoBehaviour
                 }
             default:
                 {
-                    GameObject enemy = GameManager.Instance.pool.Get(0);
+                    GameObject enemy = GameManager.instance.pool.Get(0);
                     enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
                     enemy.GetComponent<Enemy>().Init(spawnData[0]);
                     break;
@@ -76,6 +76,7 @@ public class Spawner : MonoBehaviour
 [System.Serializable]
 public class SpawnData
 {
+    public string name;
     public int health;
     public float damage;
     public int vitamin;

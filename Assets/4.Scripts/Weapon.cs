@@ -8,14 +8,17 @@ public class Weapon : MonoBehaviour
     public int count;
     public float LaunchSpeed;
     public float cornAttackTimer;
-    const float TimerZero = 0;
+    public float attackTimer;
+    const float timerZero = 0;
     CornTower corn;
-    MainTower tower;
+    Tower tower;
+
+    public bool canAttack = false;
 
     private void Awake()
     {
         corn = GetComponentInParent<CornTower>();
-        tower = GetComponentInParent<MainTower>();
+        tower = GetComponentInParent<Tower>();
     }
     private void Start()
     {
@@ -26,10 +29,16 @@ public class Weapon : MonoBehaviour
         switch (id)
         {
             case 0:
-                if (Input.GetMouseButtonDown(1))
+                attackTimer += Time.deltaTime;
+
+                if (GameManager.instance.towerSelect.towerType == SelectTower.TowerType.DefalutSelect)
                 {
-                    Fire();
-                    tower.Idle();
+                    if (Input.GetMouseButtonDown(1) && attackTimer > LaunchSpeed)
+                    {
+                        attackTimer = timerZero;
+                        Fire();
+                        tower.Idle();
+                    }
                 }
                 break;
             case 1:
@@ -37,7 +46,7 @@ public class Weapon : MonoBehaviour
 
                 if (cornAttackTimer > LaunchSpeed)
                 {
-                    cornAttackTimer = TimerZero;
+                    cornAttackTimer = timerZero;
                     AutoFire();
                     tower.Idle();
                 }
@@ -60,7 +69,7 @@ public class Weapon : MonoBehaviour
                 LaunchSpeed = 0.5f;
                 break;
             case 1:
-                LaunchSpeed = 0.5f;
+                LaunchSpeed = 1f;
                 break;
             default:
                 break;
@@ -78,7 +87,7 @@ public class Weapon : MonoBehaviour
         Vector3 dir = targetPos - transform.position;
         dir = dir.normalized;
 
-        Transform bullet = GameManager.Instance.pool.Get(prefabId).transform;
+        Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
         bullet.position = transform.position;
 
         bullet.rotation = Quaternion.FromToRotation(Vector3.left, dir); //회전 방향
@@ -93,9 +102,9 @@ public class Weapon : MonoBehaviour
         Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         pos = pos.normalized;
 
-        Transform bullet = GameManager.Instance.pool.Get(prefabId).transform;
+        Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
         bullet.position = transform.position;
-        bullet.rotation = Quaternion.FromToRotation(Vector3.left, pos); //회전 방향
+        bullet.rotation = Quaternion.FromToRotation(Vector3.left, pos);
         bullet.GetComponent<Bullet>().Init(damage, count, pos, 25);
     }
 }

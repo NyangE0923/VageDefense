@@ -10,18 +10,19 @@ TagManager:
   - Bullet
   - AttackDistance
   - Tile
+  - SubTower
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - MainTower
+  - Tower
   - Water
   - UI
   - Enemy
   - Bullet
   - EnemyAttack
   - Tile
-  - 
+  - ClickBlocker
   - 
   - 
   - 

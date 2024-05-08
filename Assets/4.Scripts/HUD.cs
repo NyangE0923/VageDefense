@@ -6,12 +6,13 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
 {
-    public enum InfoType { Vitamin, Mineral, Dietary_Fiber, Time, MainHealth, EnemyHealth, TowerHealth }
+    public enum InfoType { Vitamin, Mineral, Dietary_Fiber, Time, MainHealth, EnemyHealth, SubTowerHealth }
     public InfoType type;
 
     TMP_Text myText;
     Slider mySlider;
     Enemy enemy;
+    SubTower subTower;
 
     private void Awake()
     {
@@ -25,15 +26,15 @@ public class HUD : MonoBehaviour
         switch (type)
         {
             case InfoType.Vitamin:
-                myText.text = string.Format("{0:#,###}", GameManager.Instance.vitamin);
+                myText.text = string.Format("{0:#,###}", GameManager.instance.vitamin);
                 break;
 
             case InfoType.Mineral:
-                myText.text = string.Format("{0:#,###}", GameManager.Instance.mineral);
+                myText.text = string.Format("{0:#,###}", GameManager.instance.mineral);
                 break;
 
             case InfoType.Dietary_Fiber:
-                myText.text = string.Format("{0:#,###}", GameManager.Instance.dietaryFiber);
+                myText.text = string.Format("{0:#,###}", GameManager.instance.dietaryFiber);
                 break;
 
             case InfoType.Time:
@@ -41,8 +42,8 @@ public class HUD : MonoBehaviour
                 break;
 
             case InfoType.MainHealth:
-                float curHealth = GameManager.Instance.health;
-                float maxHealth = GameManager.Instance.maxHealth;
+                float curHealth = GameManager.instance.health;
+                float maxHealth = GameManager.instance.maxHealth;
                 mySlider.value = curHealth / maxHealth;
                 break;
 
@@ -51,11 +52,18 @@ public class HUD : MonoBehaviour
                 float EnemymaxHealth = enemy.maxHealth;
                 mySlider.value = EnemycurHealth / EnemymaxHealth;
                 break;
+
+            case InfoType.SubTowerHealth:
+                float SubTowercurHealth = subTower.currentHealth;
+                float SubTowermaxHealth = subTower.maxHealth;
+                mySlider.value = SubTowercurHealth / SubTowermaxHealth;
+                break;
         }
     }
 
     private void OnEnable()
     {
         enemy = GetComponentInParent<Enemy>();
+        subTower = GetComponentInParent<SubTower>();
     }
 }

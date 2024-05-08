@@ -1,15 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class PotatoAttack : MonoBehaviour
 {
-    //이동로직으로 이미 메인타워까지 걸어가긴 하므로 공격주기와 공격애니메이션 재생주기 공격을 구현하면 될 것 같다.
     [SerializeField] private float attackTime = 3f;
     Enemy enemy;
-
     AnimationController anim;
+    Collider2D currentHit; // 현재 충돌한 Collider2D를 저장하는 변수
 
     private void Start()
     {
@@ -17,42 +14,89 @@ public class PotatoAttack : MonoBehaviour
         anim = GetComponent<AnimationController>();
     }
 
-    private void OnTriggerEnter2D(Collider2D hit)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if(hit != null) //객체가 담겼는지 확인
+        if (other != null)
         {
-            if(hit.CompareTag("MainTower")) //해당 객체가 MainTower를 가지고 있다면
+            currentHit = other; // 현재 충돌한 Collider2D를 저장
+            switch (other.tag)
             {
-                if(gameObject.activeSelf)
-                {
-                    StartCoroutine("AttackTower");
-                }
+                case "SubTower":
+                    if (gameObject.activeSelf)
+                    {
+                        StartCoroutine(AttackSubTower());
+                        Debug.Log("서브타워 발견");
+                    }
+                    break;
+                case "MainTower":
+                    if (gameObject.activeSelf)
+                    {
+                        StartCoroutine(AttackTower());
+                    }
+                    break;
+                default:
+                    break;
             }
+            anim.isMoving = false;
+            anim.anim.SetBool(anim.Moving, anim.isMoving);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if(collision != null)
+        if (other != null && other == currentHit)
         {
-            if(collision.GetComponent<MainTower>() != null)
+            anim.isMoving = true;
+            anim.anim.SetBool(anim.Moving, anim.isMoving);
+            currentHit = null;
+
+            switch (other.tag)
             {
-                StopCoroutine("AttackTower");
-                anim.isMoving = true;
-                anim.anim.SetBool(anim.Moving, anim.isMoving);
+                case "SubTower":
+                    if (gameObject.activeSelf)
+                    {
+                        StopAllCoroutines(); // 해당 서브타워 공격 중단
+                        Debug.Log("서브타워 파괴");
+                    }
+                    break;
+                case "MainTower":
+                    if (gameObject.activeSelf)
+                    {
+                        StopAllCoroutines(); // 메인타워 공격 중단
+                    }
+                    break;
+                default:
+                    break;
             }
+
         }
     }
 
     IEnumerator AttackTower()
     {
-        anim.isAttacking = true;
-        anim.isMoving = false;
-        while (anim.isAttacking)
+        while (true)
         {
-            GameManager.Instance.health -= enemy.damage;
+            GameManager.instance.health -= enemy.damage;
             anim.anim.SetTrigger(anim.Attack);
             Debug.Log("공격완료!");
+            yield return new WaitForSeconds(attackTime);
+        }
+    }
+
+    IEnumerator AttackSubTower()
+    {
+        while (true)
+        {
+            if (currentHit != null)
+            {
+                SubTower towerScript = currentHit.GetComponent<SubTower>();
+                if (towerScript != null)
+                {
+                    towerScript.BeDamaged(enemy.damage);
+                }
+                anim.anim.SetTrigger(anim.Attack);
+                Debug.Log("공격완료!");
+            }
             yield return new WaitForSeconds(attackTime);
         }
     }

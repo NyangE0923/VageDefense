@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager instance;
     [Header("# Game Time")]
     public float gameTime;
     public float maxGameTime = 5 * 10f;
@@ -16,18 +16,22 @@ public class GameManager : MonoBehaviour
     [Space]
     [Header("# Game Object")]
     public PoolManager pool;
-    public MainTower mainTower;
+    public SubTower subTower;
     [Space]
     [Header("# Player info")]
     public float health;
     public float maxHealth = 100f;
+    [Header("# Tower Select Info")]
+    public SelectTower towerSelect;
+    public TowerTypeSelector typeSelect;
+    public MouseSelect mouse;
 
     private void Awake()
     {
-        if(Instance == null)
-            Instance = this;
+        if(instance == null)
+            instance = this;
         else
-            Destroy(Instance);
+            Destroy(instance);
     }
 
     private void Start()

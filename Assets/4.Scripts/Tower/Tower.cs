@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainTower : MonoBehaviour
+public class Tower : MonoBehaviour
 {
-    public float maxHealth = 100f;
-    private float currentHealth;
     AnimationController anim;
 
     private void Awake()
@@ -14,10 +12,6 @@ public class MainTower : MonoBehaviour
         anim = GetComponent<AnimationController>();
     }
 
-    private void Start()
-    {
-        currentHealth = maxHealth;
-    }
     #region Tower List Delete
     public event Action<Transform> OnTowerDisabled;
     private void HandleTowerDisabled()
@@ -29,14 +23,6 @@ public class MainTower : MonoBehaviour
         HandleTowerDisabled();
     }
     #endregion
-    public void TakeDamage(float damage)
-    {
-        currentHealth -= damage;
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
 
     public void Attacking()
     {
@@ -48,8 +34,9 @@ public class MainTower : MonoBehaviour
         anim.anim.SetTrigger(anim.Idle);
     }
 
-    private void Die()
+    public void Die()
     {
         gameObject.SetActive(false); // 타워를 비활성화
     }
+
 }

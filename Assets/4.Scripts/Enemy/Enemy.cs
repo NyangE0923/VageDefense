@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Enemy info")]
+    [Header("Enemy Info")]
     public float health;
     public float maxHealth;
     public bool isLive;
@@ -13,55 +13,43 @@ public class Enemy : MonoBehaviour
     public int vitamin;
     public int dietaryFiber;
     public float damage;
+    public float moveSpeed;
 
-    [Header("Enemy Component")]
+    [Header("Enemy Components")]
     public RuntimeAnimatorController controller;
     public Rigidbody2D rb;
     public AnimationController anim;
 
-    [Header("Move info")]
+    [Header("Movement")]
     public List<Transform> towers = new List<Transform>();
-    public float moveSpeed = 3;
     public CircleCollider2D detectionDistance;
     public bool isMovingToTower = true;
     public Transform currentTargetTower;
-
-    WaitForFixedUpdate wait;
-    SpriteRenderer sr;
+    private HashSet<Transform> registeredTowers = new HashSet<Transform>();
 
     private void Start()
     {
         detectionDistance = GetComponentInChildren<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<AnimationController>();
-        sr = GetComponentInChildren<SpriteRenderer>();
 
         foreach (Transform tower in towers)
         {
-            MainTower towerScript = tower.GetComponent<MainTower>();
+            Tower towerScript = tower.GetComponent<Tower>();
             if (towerScript != null)
             {
                 towerScript.OnTowerDisabled += HandleTowerDisabled;
             }
         }
     }
+    private void Update()
+    {
+        DetectionTower();
+    }
     private void FixedUpdate()
     {
         EnemyMove();
     }
-
-    public void HandleTowerDisabled(Transform disabledTower)
-    {
-        if (towers.Contains(disabledTower))
-        {
-            towers.Remove(disabledTower);
-            if (currentTargetTower == disabledTower)
-            {
-                currentTargetTower = null;
-            }
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("MainTower") && !towers.Contains(other.transform))
@@ -69,37 +57,102 @@ public class Enemy : MonoBehaviour
             towers.Add(other.transform);
         }
 
-        if (other != null)
+        if (other.CompareTag("Bullet"))
         {
-            if (other.CompareTag("Bullet"))
+            health -= other.GetComponent<Bullet>().damage;
+
+            if (health <= 0)
             {
-                health -= other.GetComponent<Bullet>().damage;
-
-                if (health > 0)
-                {
-                }
-                else
-                {
-                    Dead();
-                    ResourcesDrop();
-
-                }
+                Dead();
+                ResourcesDrop();
             }
         }
     }
-
     private void ResourcesDrop()
     {
-        GameManager.Instance.vitamin += vitamin;
-        GameManager.Instance.mineral += mineral;
-        GameManager.Instance.dietaryFiber += dietaryFiber;
+        GameManager.instance.vitamin += vitamin;
+        GameManager.instance.mineral += mineral;
+        GameManager.instance.dietaryFiber += dietaryFiber;
     }
-
-    private void EnemyMove()
+    protected virtual void EnemyMove()
     {
         if (!isLive || !isMovingToTower)
             return;
 
+        // 만약 현재 타겟 타워가 비활성화되었거나 null이라면 다음 타워를 찾음
+        if (currentTargetTower == null || !currentTargetTower.gameObject.activeSelf)
+        {
+            currentTargetTower = null;
+            FindNearestTower();
+        }
+
+
+        float shortestDistance = float.MaxValue;
+        Transform nearestTower = null;
+
+        foreach (Transform towerTransform in towers)
+        {
+            if (!towerTransform.gameObject.activeSelf)
+                continue;
+
+            float distanceToTower = Vector2.Distance(rb.position, towerTransform.position);
+            if (distanceToTower < shortestDistance)
+            {
+                shortestDistance = distanceToTower;
+                nearestTower = towerTransform;
+            }
+        }
+
+        if (nearestTower != null && shortestDistance >= detectionDistance.radius)
+        {
+            currentTargetTower = nearestTower;
+            Vector2 dirVec = nearestTower.position - transform.position;
+            Vector2 nextVec = dirVec.normalized * moveSpeed * Time.fixedDeltaTime;
+            rb.MovePosition(rb.position + nextVec);
+            rb.velocity = Vector2.zero;
+            anim.FlipX(nearestTower, transform);
+        }
+    }
+    protected virtual void DetectionTower()
+    {
+        // SubTower 탐지
+        foreach (var tower in GameObject.FindGameObjectsWithTag("SubTower").Select(tower => tower.transform))
+        {
+            if (!registeredTowers.Contains(tower))
+            {
+                towers.Add(tower);
+                registeredTowers.Add(tower);
+            }
+        }
+
+        // MainTower 탐지
+        foreach (var tower in GameObject.FindGameObjectsWithTag("MainTower").Select(tower => tower.transform))
+        {
+            if (!registeredTowers.Contains(tower))
+            {
+                towers.Add(tower);
+                registeredTowers.Add(tower);
+            }
+        }
+    }
+    private void HandleTowerDisabled(Transform disabledTower)
+    {
+        if (towers.Contains(disabledTower))
+        {
+            towers.Remove(disabledTower);
+            if (currentTargetTower == disabledTower)
+            {
+                currentTargetTower = null;
+                FindNearestTower();
+            }
+        }
+        else if (registeredTowers.Contains(disabledTower))
+        {
+            registeredTowers.Remove(disabledTower);
+        }
+    }
+    private void FindNearestTower()
+    {
         float shortestDistance = float.MaxValue;
         Transform nearestTower = null;
 
@@ -113,37 +166,13 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (nearestTower != null)
-        {
-            if (shortestDistance >= detectionDistance.radius)
-            {
-                isMovingToTower = true;
-                currentTargetTower = nearestTower;
-
-                Vector2 dirVec = nearestTower.position - transform.position;
-                Vector2 nextVec = dirVec.normalized * moveSpeed * Time.fixedDeltaTime;
-                rb.MovePosition(rb.position + nextVec);
-                rb.velocity = Vector2.zero;
-                anim.FlipX(nearestTower, transform);
-            }
-        }
+        currentTargetTower = nearestTower;
     }
 
-    private void ArrivedAtTower()
-    {
-        isMovingToTower = false; // 타워를 향해 이동 중이 아니라고 설정
-    }
-
-    //스크립트가 활성화 되면 tower의 rigidbody2D 컴포넌트를 게임매니저를 통해 가져온다.
-    private void OnEnable()
-    {
-        towers = new List<Transform>(GameObject.FindGameObjectsWithTag("MainTower").Select(tower => tower.transform));
-        isLive = true;
-        health = maxHealth;
-    }
-
+    #region 적의 상태 및 죽음
     public void Init(SpawnData data)
     {
+        name = data.name;
         moveSpeed = data.speed;
         damage = data.damage;
         maxHealth = data.health;
@@ -156,5 +185,23 @@ public class Enemy : MonoBehaviour
     private void Dead()
     {
         gameObject.SetActive(false);
+    }
+    private void OnDisable()
+    {
+        registeredTowers.Clear();
+    }
+    #endregion
+    private void OnEnable()
+    {
+        // 기존에 등록된 타워만 다시 탐지하여 리스트에 추가
+        foreach (var tower in registeredTowers)
+        {
+            if (!towers.Contains(tower))
+            {
+                towers.Add(tower);
+            }
+        }
+        isLive = true;
+        health = maxHealth;
     }
 }
