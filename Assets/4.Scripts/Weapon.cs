@@ -2,13 +2,18 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
+    [Header("Weapon Info")]
     public int id;
     public int prefabId;
     public float damage;
     public int count;
-    public float LaunchSpeed;
-    public float cornAttackTimer;
-    public float attackTimer;
+    public float duration;
+    public float durationTimer;
+
+
+    private float LaunchSpeed;
+    private float cornAttackTimer;
+    private float attackTimer;
     const float timerZero = 0;
     CornTower corn;
     Tower tower;
@@ -61,12 +66,14 @@ public class Weapon : MonoBehaviour
         count = _count;
     }
 
+
+
     public void Init()
     {
         switch (id)
         {
             case 0:
-                LaunchSpeed = 0.5f;
+                LaunchSpeed = 0.2f;
                 break;
             case 1:
                 LaunchSpeed = 1f;
@@ -92,7 +99,7 @@ public class Weapon : MonoBehaviour
 
         bullet.rotation = Quaternion.FromToRotation(Vector3.left, dir); //회전 방향
 
-        bullet.GetComponent<Bullet>().Init(damage, count, dir, 15f);
+        bullet.GetComponent<Bullet>().Init(damage, count, dir, 15f, duration, durationTimer);
     }
 
     void Fire()
@@ -105,6 +112,6 @@ public class Weapon : MonoBehaviour
         Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
         bullet.position = transform.position;
         bullet.rotation = Quaternion.FromToRotation(Vector3.left, pos);
-        bullet.GetComponent<Bullet>().Init(damage, count, pos, 25);
+        bullet.GetComponent<Bullet>().Init(damage, count, pos, 25, duration, durationTimer);
     }
 }

@@ -1,20 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
-public class PotatoAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour
 {
-    [SerializeField] private float attackTime = 3f;
-    Enemy enemy;
-    AnimationController anim;
-    Collider2D currentHit; // 현재 충돌한 Collider2D를 저장하는 변수
+    public float attackTime = 3f;
+    public Enemy enemy;
+    public AnimationController anim;
+    public Collider2D currentHit; // 현재 충돌한 Collider2D를 저장하는 변수
 
-    private void Start()
+    protected virtual void Start()
     {
         enemy = GetComponent<Enemy>();
         anim = GetComponent<AnimationController>();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (other != null)
         {
@@ -42,7 +42,7 @@ public class PotatoAttack : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    protected virtual void OnTriggerExit2D(Collider2D other)
     {
         if (other != null && other == currentHit)
         {
@@ -89,12 +89,12 @@ public class PotatoAttack : MonoBehaviour
         {
             if (currentHit != null)
             {
+                anim.anim.SetTrigger(anim.Attack);
                 SubTower towerScript = currentHit.GetComponent<SubTower>();
                 if (towerScript != null)
                 {
                     towerScript.BeDamaged(enemy.damage);
                 }
-                anim.anim.SetTrigger(anim.Attack);
                 Debug.Log("공격완료!");
             }
             yield return new WaitForSeconds(attackTime);

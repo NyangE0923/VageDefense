@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [Header("# Game Time")]
     public float gameTime;
-    public float maxGameTime = 5 * 10f;
+    public float maxGameTime = 12 * 60f;
     [Space]
     [Header("# User's Money")]
     public int vitamin = 0;

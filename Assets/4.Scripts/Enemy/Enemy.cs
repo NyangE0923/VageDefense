@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
     public Transform currentTargetTower;
     private HashSet<Transform> registeredTowers = new HashSet<Transform>();
 
-    private void Start()
+    protected virtual void Start()
     {
         detectionDistance = GetComponentInChildren<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-    private void Update()
+    protected virtual void Update()
     {
         DetectionTower();
     }
@@ -151,7 +151,7 @@ public class Enemy : MonoBehaviour
             registeredTowers.Remove(disabledTower);
         }
     }
-    private void FindNearestTower()
+    public void FindNearestTower()
     {
         float shortestDistance = float.MaxValue;
         Transform nearestTower = null;

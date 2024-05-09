@@ -10,6 +10,7 @@ public class AnimationController : MonoBehaviour
     public string Idle = "Idle";
 
     public bool isMoving;
+    public bool isIdle;
     public bool isAttacking = true;
 
     public Animator anim;
