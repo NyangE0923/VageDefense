@@ -26,6 +26,7 @@ public class TowerTypeSelector : MonoBehaviour
 
     void OnCornTowerButtonClick()
     {
+        AudioManager.instance.PlaySfx(AudioManager.sfx.UI);
         selectTower.towerType = SelectTower.TowerType.CornTower;
         SpriteRenderer sr = GameManager.instance.mouse.sr;
         sr.sprite = GameManager.instance.mouse.cornTowerSprite;
@@ -33,6 +34,7 @@ public class TowerTypeSelector : MonoBehaviour
     }
     void OnSpamTowerButtonClick()
     {
+        AudioManager.instance.PlaySfx(AudioManager.sfx.UI);
         selectTower.towerType = SelectTower.TowerType.SpamTower;
         SpriteRenderer sr = GameManager.instance.mouse.sr;
         sr.sprite = GameManager.instance.mouse.spamTowerSprite;

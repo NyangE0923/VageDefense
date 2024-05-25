@@ -7,7 +7,6 @@ public class TomatoAttack : EnemyAttack
 
     public Transform[] spawnPoint;
     public bool canMoving = true;
-    public bool isAttacking = false;
 
     private void Awake()
     {
@@ -21,11 +20,21 @@ public class TomatoAttack : EnemyAttack
 
     private void SpawnCherryTomato()
     {
+        if (!gameObject.activeSelf)
+        {
+            return; // 게임 오브젝트가 비활성화된 경우 함수를 즉시 종료
+        }
+
         StartCoroutine(CherryTomatoSpawn());
     }
 
     IEnumerator CherryTomatoSpawn()
     {
+        if (!gameObject.activeSelf)
+        {
+            yield break;
+        }
+
         canMoving = false;
         anim.isIdle = true;
         anim.anim.SetBool(anim.Idle, anim.isIdle);
@@ -123,28 +132,49 @@ public class TomatoAttack : EnemyAttack
         while (true)
         {
             anim.anim.SetTrigger(anim.Attack);
-            GameManager.instance.health -= enemy.damage;
+            Invoke("BossMainAttack", .4f);
             Debug.Log("공격완료!");
             yield return new WaitForSeconds(attackTime);
         }
     }
+
+    private void BossMainAttack()
+    {
+        GameManager.instance.health -= enemy.damage;
+        AudioManager.instance.PlaySfx(AudioManager.sfx.BossAttack);
+    }
+
     IEnumerator AttackSubTower()
     {
         while (true)
         {
-            if (currentHit != null)
-            {
-                anim.anim.SetTrigger(anim.Attack);
-
-                SubTower towerScript = currentHit.GetComponent<SubTower>();
-                if (towerScript != null)
-                {
-                    towerScript.BeDamaged(enemy.damage);
-                }
-                Debug.Log("공격완료!");
-            }
+            Invoke("BossSubAttack", .4f);
             yield return new WaitForSeconds(attackTime);
         }
+    }
+
+    private void BossSubAttack()
+    {
+        if (currentHit != null)
+        {
+            anim.anim.SetTrigger(anim.Attack);
+
+            SubTower towerScript = currentHit.GetComponent<SubTower>();
+            if (towerScript != null)
+            {
+                towerScript.BeDamaged(enemy.damage);
+                AudioManager.instance.PlaySfx(AudioManager.sfx.BossAttack);
+            }
+            Debug.Log("공격완료!");
+        }
+    }
+
+    private void OnDisable()
+    {
+        isAttacking = false;
+        canMoving = true;
+        anim.isIdle = false;
+        anim.anim.SetBool(anim.Idle, anim.isIdle);
     }
     #endregion
 }

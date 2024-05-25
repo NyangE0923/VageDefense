@@ -49,5 +49,6 @@ public class SubTower : MonoBehaviour
     {
         //리스트에 여러가지 태그를 담는 방법
         currentHealth = maxHealth;
+
     }
 }

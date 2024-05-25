@@ -10,11 +10,13 @@ public class Spawner : MonoBehaviour
     public SpawnTime[] spawn;
     public float levelTime = 60;
 
-    [SerializeField] private int level; //현재 레벨
+    int BossSpawning = 15;
+
+    public int level; //현재 레벨
     [SerializeField] float spawnTimer;  //적 생성 타이머
 
     private bool bossMonsterSpawned = false;
-    private bool isEnemySpawnAllowed = true;
+    private GameObject bossMonster;
 
     private void Awake()
     {
@@ -24,9 +26,8 @@ public class Spawner : MonoBehaviour
     {
         spawnTimer += Time.deltaTime;
         level = Mathf.FloorToInt(GameManager.instance.gameTime / levelTime); //게임 진행 시간에 따른 레벨
-        level = Mathf.Min(level, spawn.Length - 1); // 최대 레벨 설정
 
-        if (spawnTimer > spawn[level].spawnTime && isEnemySpawnAllowed)
+        if (spawnTimer > spawn[level].spawnTime)
         {
             EnemySpawn();
             spawnTimer = 0;
@@ -78,11 +79,123 @@ public class Spawner : MonoBehaviour
                     {
                         SpawnEnemy(0, 3);
                     }
+                    if (Random.value < .3f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .6f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 4:
+                {
+                    if (Random.value < .2f)
+                    {
+                        SpawnEnemy(0, 3);
+                    }
+                    if (Random.value < .3f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .5f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 5:
+                {
+                    if (Random.value < .2f)
+                    {
+                        SpawnEnemy(0, 3);
+                    }
+                    if (Random.value < .3f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .5f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 6:
+                {
+                    if (Random.value < .05f)
+                    {
+                        SpawnEnemy(1, 4); //스페셜 당근
+                    }
+                    if (Random.value < .2f)
+                    {
+                        SpawnEnemy(0, 3); //스페셜 감자
+                    }
+                    if (Random.value < .25f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .5f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 7:
+                {
+                    if (Random.value < .1f)
+                    {
+                        SpawnEnemy(1, 4); //스페셜 당근
+                    }
+                    if (Random.value < .25f)
+                    {
+                        SpawnEnemy(0, 3); //스페셜 감자
+                    }
+                    if (Random.value < .25f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .4f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 8:
+                {
+                    if (Random.value < .15f)
+                    {
+                        SpawnEnemy(1, 4); //스페셜 당근
+                    }
+                    if (Random.value < .3f)
+                    {
+                        SpawnEnemy(0, 3); //스페셜 감자
+                    }
                     if (Random.value < .2f)
                     {
                         SpawnEnemy(1, 1);
                     }
-                    if (Random.value < .7f)
+                    if (Random.value < .35f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
+                    break;
+                }
+            case 9:
+                {
+                    if (Random.value < .2f)
+                    {
+                        SpawnEnemy(1, 4); //스페셜 당근
+                    }
+                    if (Random.value < .4f)
+                    {
+                        SpawnEnemy(0, 3); //스페셜 감자
+                    }
+                    if (Random.value < .1f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .3f)
                     {
                         SpawnEnemy(0, 0);
                     }
@@ -90,9 +203,22 @@ public class Spawner : MonoBehaviour
                 }
             default:
                 {
-                    GameObject enemy = GameManager.instance.pool.Get(0);
-                    enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
-                    enemy.GetComponent<Enemy>().Init(spawnData[0]);
+                    if (Random.value < .25f)
+                    {
+                        SpawnEnemy(1, 4); //스페셜 당근
+                    }
+                    if (Random.value < .5f)
+                    {
+                        SpawnEnemy(0, 3); //스페셜 감자
+                    }
+                    if (Random.value < .05f)
+                    {
+                        SpawnEnemy(1, 1);
+                    }
+                    if (Random.value < .2f)
+                    {
+                        SpawnEnemy(0, 0);
+                    }
                     break;
                 }
         }
@@ -104,7 +230,7 @@ public class Spawner : MonoBehaviour
         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
         enemy.GetComponent<Enemy>().Init(spawnData[DataNumber]);
 
-        if(GetCurrentActiveEnemiesCount() >= 10)
+        if(GetCurrentActiveEnemiesCount() >= BossSpawning)
         {
             StartCoroutine(SpawnTomato());
         }
@@ -124,21 +250,16 @@ public class Spawner : MonoBehaviour
         return count; //Enemy 태그를 가지고 있는 수를 int형 변수로 반환
     }
 
-    #region 토마토 생성 및 Enemy 스폰 딜레이 코루틴
-    private IEnumerator AllowEnemySpawnAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        isEnemySpawnAllowed = true; // 일정 시간 후 다시 적 생성 허용
-    }
+    #region 토마토 생성
+
     private IEnumerator SpawnTomato()
     {
-        yield return new WaitForSeconds(3f);
 
-        isEnemySpawnAllowed = false;
+        yield return new WaitForSeconds(3f);
 
         int activeEnemiesCount = GetCurrentActiveEnemiesCount();
 
-        if(activeEnemiesCount >= 15 && !bossMonsterSpawned)
+        if (activeEnemiesCount >= BossSpawning && !bossMonsterSpawned)
         {
             float totalHealth = 0f;
             float totalDamage = 0f;
@@ -151,29 +272,37 @@ public class Spawner : MonoBehaviour
 
             SpawnData tomatoData = new SpawnData();
             tomatoData.name = "BossEnemy : TOMATO";
-            tomatoData.health = totalHealth / 1.5f;
+            tomatoData.health = totalHealth * 1.5f;
             tomatoData.damage = totalDamage / 1.5f;
-            tomatoData.vitamin = 100;
-            tomatoData.mineral = 100;
+            tomatoData.vitamin = Random.Range(50, 200);
+            tomatoData.mineral = Random.Range(50, 200);
             tomatoData.dietaryFiber = 5;
-            tomatoData.speed = 10;
+            tomatoData.speed = 1;
 
-            GameObject tomato = GameManager.instance.pool.Get(6);
-            tomato.transform.position = GetAveragePositionOfEnemies();
-            tomato.GetComponent<Tomato>().Init(tomatoData);
+            bossMonster = GameManager.instance.pool.Get(6);
+            bossMonster.transform.position = GetAveragePositionOfEnemies();
+            bossMonster.GetComponent<Tomato>().Init(tomatoData);
+
+
 
             bossMonsterSpawned = true;
 
             foreach(var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {
-                if(enemy.activeSelf && enemy != tomato)
+                if(enemy.activeSelf && enemy != bossMonster)
                 {
                     enemy.SetActive(false);
                 }
             }
 
-            StartCoroutine(AllowEnemySpawnAfterDelay(20f));
+            Invoke("BossSpawnCool", 60f);
         }
+    }
+
+    private void BossSpawnCool()
+    {
+        bossMonsterSpawned = false;
+
     }
     #endregion
     private Vector3 GetAveragePositionOfEnemies()

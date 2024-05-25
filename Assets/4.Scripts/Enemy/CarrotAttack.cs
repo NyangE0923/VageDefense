@@ -54,6 +54,7 @@ public class CarrotAttack : MonoBehaviour
         {
             if (currentHit != null)
             {
+                AudioManager.instance.PlaySfx(AudioManager.sfx.CarrotAttack);
                 GameManager.instance.health -= enemy.damage; // SubTower가 아닌 다른 오브젝트를 공격할 때는 메인타워의 체력을 감소시킴
             }
             yield return new WaitForSeconds(attackTimer);

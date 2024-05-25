@@ -127,7 +127,8 @@ MonoBehaviour:
   Attack: Attack
   Attack2: Attack2
   Idle: Idle
-  isMoving: 0
+  isMoving: 1
+  isIdle: 0
   isAttacking: 0
   anim: {fileID: 0}
   sr: {fileID: 0}
@@ -143,7 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2384656efe4a0e54298e838f23984b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAttacking: 0
   attackTime: 3
+  enemy: {fileID: 0}
+  anim: {fileID: 0}
+  currentHit: {fileID: 0}
 --- !u!114 &3812559207409158847
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -40,6 +40,7 @@ public class CherryTomatoAttack : EnemyAttack
         anim.anim.SetTrigger(anim.Attack);
         yield return new WaitForSeconds(attackTime);
         GameManager.instance.health -= enemy.damage;
+        AudioManager.instance.PlaySfx(AudioManager.sfx.CherryTomatoBoom);
         gameObject.SetActive(false);
     }
 
@@ -54,6 +55,7 @@ public class CherryTomatoAttack : EnemyAttack
             if (towerScript != null)
             {
                 towerScript.BeDamaged(enemy.damage);
+                AudioManager.instance.PlaySfx(AudioManager.sfx.CherryTomatoBoom);
             }
             gameObject.SetActive(false);
         }

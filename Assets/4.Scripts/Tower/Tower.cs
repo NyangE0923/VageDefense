@@ -36,6 +36,7 @@ public class Tower : MonoBehaviour
 
     public void Die()
     {
+        AudioManager.instance.PlaySfx(AudioManager.sfx.TowerDisable);
         gameObject.SetActive(false); // 타워를 비활성화
     }
 

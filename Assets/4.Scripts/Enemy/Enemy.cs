@@ -60,6 +60,7 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Bullet"))
         {
             health -= other.GetComponent<Bullet>().damage;
+            AudioManager.instance.PlaySfx(AudioManager.sfx.EnemyDamage);
 
             if (health <= 0)
             {
@@ -186,7 +187,7 @@ public class Enemy : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         registeredTowers.Clear();
     }

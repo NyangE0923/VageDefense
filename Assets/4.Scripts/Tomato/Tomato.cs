@@ -50,5 +50,13 @@ public class Tomato : Enemy
             rb.velocity = Vector2.zero;
             anim.FlipX(nearestTower, transform);
         }
+
+        
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        
     }
 }

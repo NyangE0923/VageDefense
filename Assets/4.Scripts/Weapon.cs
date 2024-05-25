@@ -38,9 +38,10 @@ public class Weapon : MonoBehaviour
 
                 if (GameManager.instance.towerSelect.towerType == SelectTower.TowerType.DefalutSelect)
                 {
-                    if (Input.GetMouseButtonDown(1) && attackTimer > LaunchSpeed)
+                    if (Input.GetMouseButton(1) && attackTimer > LaunchSpeed)
                     {
                         attackTimer = timerZero;
+                        AudioManager.instance.PlaySfx(AudioManager.sfx.BeanAttack);
                         Fire();
                         tower.Idle();
                     }
@@ -73,10 +74,11 @@ public class Weapon : MonoBehaviour
         switch (id)
         {
             case 0:
-                LaunchSpeed = 0.2f;
+                LaunchSpeed = 0.15f;
                 break;
             case 1:
-                LaunchSpeed = 1f;
+                LaunchSpeed = 0.5f;
+
                 break;
             default:
                 break;
@@ -89,6 +91,8 @@ public class Weapon : MonoBehaviour
             return;
 
         tower.Attacking();
+
+        AudioManager.instance.PlaySfx(AudioManager.sfx.CornAttack);
 
         Vector3 targetPos = corn.scanner.nearestTarget.position;
         Vector3 dir = targetPos - transform.position;

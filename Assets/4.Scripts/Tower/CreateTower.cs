@@ -9,10 +9,19 @@ public class CreateTower : MonoBehaviour
     public LayerMask towerLayer;
     Vector2 currentMousePos;
 
+    GameManager gameManager;
+
     private void Start()
     {
         selectTower = GetComponent<SelectTower>();
         towerTypeSelector = GetComponent<TowerTypeSelector>();
+
+        gameManager = FindObjectOfType<GameManager>();
+
+        if (gameManager != null)
+        {
+            gameManager.SetTowerStats(towerStats);
+        }
     }
 
     public void Update()
@@ -67,6 +76,7 @@ public class CreateTower : MonoBehaviour
         //자원 제한 현재 유저가 가지고 있는 자원과 요구치를 비교
         if (GameManager.instance.vitamin >= towerStats[statNumber].vitamin && GameManager.instance.mineral >= towerStats[statNumber].mineral)
         {
+            AudioManager.instance.PlaySfx(AudioManager.sfx.TowerCreate);
             //타워를 마우스의 위치에 생성
             GameObject subTower = GameManager.instance.pool.Get(poolNumber);
             subTower.transform.position = currentMousePos;
